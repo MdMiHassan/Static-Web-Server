@@ -1,29 +1,28 @@
 package server.sack;
 
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import util.SynchronizedQueue;
 
 public class SackEngine implements Runnable{
     private Thread thread;
-    private SynchronizedQueue<String> queue;
+    private BlockingQueue<String> queue;
     private Sack sack;
     public SackEngine(){
-        queue=new SynchronizedQueue<>();
+        queue=new LinkedBlockingQueue<>();
         sack=new SimpleSack();
         thread=new Thread(this);
     }
     @Override
     public void run() {
         while(true){
-            if(queue.size()>0){
-                sack.add(queue.poll());
-            }else{
-                try {
-                    Thread.sleep(300000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            try {
+                sack.add(queue.take());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }  
         }
     }
     public void save(String uri){

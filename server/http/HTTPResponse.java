@@ -44,8 +44,9 @@ public class HTTPResponse implements Response {
             }
             if (sack.contains(absPath)) {
                 byte[] res=sack.get(absPath);
-                response.setResponseStatus(201);
+                response.setResponseStatus(200);
                 response.setContentLength(res.length);
+                response.setResponseBody(new HTTPResponseBody(res, 0, res.length));
                 response.setAcceptRanges(true);
             } else {
                 File file = new File(absPath);
@@ -54,6 +55,7 @@ public class HTTPResponse implements Response {
                     response.setAcceptRanges(true);
                     response.setContentLength(file.length());
                     response.setResponseBody(new HTTPResponseBody(file, 0, file.length()));
+                    sack.save(absPath);
                 } else {
                     response.setResponseStatus(404);
                     response.setAcceptRanges(true);
