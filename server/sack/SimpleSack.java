@@ -1,6 +1,5 @@
 package server.sack;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,8 +21,8 @@ public class SimpleSack implements Sack {
     }
 
     @Override
-    public synchronized ByteArrayInputStream get(String uri) {
-        return new ByteArrayInputStream(memory.get(uri).getByteArray());
+    public synchronized byte[] get(String uri) {
+        return memory.get(uri).getByteArray();
     }
 
     @Override

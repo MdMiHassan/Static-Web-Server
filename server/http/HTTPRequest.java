@@ -9,6 +9,7 @@ import util.Logger;
 public class HTTPRequest {
     private InputStream inputStream;
     private HTTPRequestLine requestLine;
+
     public HTTPRequestLine getRequestLine() {
         return requestLine;
     }
@@ -47,9 +48,9 @@ public class HTTPRequest {
                 }
             }
             if (bufferSize > 0) {
-                for (int i = 0; i < bufferSize - 1; i++) {
-                    System.out.print(buffer[i] + ",");
-                }
+                // for (int i = 0; i < bufferSize - 1; i++) {
+                //     System.out.print(buffer[i] + ",");
+                // }
                 bufferSize = bufferSize - 1;
                 parseHeader(buffer, parseRequestLine(buffer, 0, bufferSize), bufferSize);
             }
@@ -112,7 +113,6 @@ public class HTTPRequest {
             requestLine.setRequestProtocol(HTTP.V_3);
         } else {
             requestLine.setRequestProtocol(HTTP.V_US);
-            System.out.println(offset);
             Logger.show("Unrecognized HTTP VERSION!" + new String(buffer, sp, offset - sp));
         }
         return offset + 1;
@@ -125,7 +125,6 @@ public class HTTPRequest {
 
         for (int start = offset; offset < bufferSize && buffer[offset] != HTTP.ASCII_NEW_LINE; offset++) {
             if (buffer[offset] == HTTP.ASCII_COLON) {
-                System.out.println("here");
                 if (HTTP.deepEqualNCS(buffer, start, offset, HTTP.HN_CONNECTION)) {
                     offset = digestConnection(buffer, offset + 1, bufferSize);
                 }
@@ -163,15 +162,15 @@ public class HTTPRequest {
         return offset + 1;
     }
 
-    private void digestRange(String token) {
+    // private void digestRange(String token) {
 
-    }
+    // }
 
-    private void digestIfRange(String token) {
+    // private void digestIfRange(String token) {
 
-    }
+    // }
 
-    private void digestIfNoneMatch(String token) {
+    // private void digestIfNoneMatch(String token) {
 
-    }
+    // }
 }

@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import server.http.HTTPService;
-
 public class ServiceExecutor {
     private BlockingQueue<Service> serviceQueue;
     private LinkedList<Thread> worker;
@@ -18,6 +16,7 @@ public class ServiceExecutor {
                 while (true) {
                     try {
                         serviceQueue.take().serve();
+                        System.out.println("freed");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

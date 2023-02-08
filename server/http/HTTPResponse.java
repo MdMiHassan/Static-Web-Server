@@ -24,36 +24,46 @@ public class HTTPResponse implements Response {
         this.responseBodies = new LinkedList<>();
     }
 
-    public HTTPResponse of(HTTPRequest request, Context context) {
+    public static HTTPResponse of(HTTPRequest request, Context context) {
         if (request == null) {
             return null;
         }
-        HTTPResponse response = new HTTPResponse();
-        HTTPRequestLine requestLine;
-        if ((requestLine = request.getRequestLine()) == null) {
+        try {
+            HTTPResponse response = new HTTPResponse();
+            HTTPRequestLine requestLine;
+            if ((requestLine = request.getRequestLine()) == null) {
+                return null;
+            }
+
+            SackEngine sack = context.getSackEngine();
+            String absPath = context.getPublicDir() + requestLine.getResourcePath();
+            System.out.println(absPath);
+            int psIndex = absPath.lastIndexOf(context.getPathSeparator());
+            if (psIndex == absPath.length() - 1) {
+                absPath += DefaultConfig.DEFAULT_PUBLIC_RESOURCE;
+            }
+            if (sack.contains(absPath)) {
+                byte[] res=sack.get(absPath);
+                response.setResponseStatus(201);
+                response.setContentLength(res.length);
+                response.setAcceptRanges(true);
+            } else {
+                File file = new File(absPath);
+                if (file.exists() && file.isFile()) {
+                    response.setResponseStatus(200);
+                    response.setAcceptRanges(true);
+                    response.setContentLength(file.length());
+                    response.setResponseBody(new HTTPResponseBody(file, 0, file.length()));
+                } else {
+                    response.setResponseStatus(404);
+                    response.setAcceptRanges(true);
+                }
+            }
+            return response;
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
-
-        SackEngine sack = context.getSackEngine();
-        String absPath = context.getPublicDir() + requestLine.getResourcePath();
-        int psIndex = absPath.lastIndexOf(context.getPathSeparator());
-        if (psIndex == absPath.length() - 1) {
-            absPath += "index.html";
-        }
-        if (sack.contains(absPath)) {
-            setResponseStatus(201);
-            setAcceptRanges(true);
-        } else {
-
-            File file = new File(absPath);
-            if (file.exists()&&file.isFile()) {
-
-            }else{
-                setResponseStatus(404);
-                setAcceptRanges(true);
-            }
-        }
-        return response;
     }
 
     public void setAcceptRanges(boolean accept) {
@@ -107,24 +117,25 @@ public class HTTPResponse implements Response {
         StringBuilder messageHeader = new StringBuilder();
         for (int i = 0; i < this.header.length; i++) {
             String h = this.header[i];
-            if (header != null) {
+            if (h != null) {
                 messageHeader.append(h);
             }
         }
         messageHeader.append("\r\n");
+        System.out.println(messageHeader.toString());
         return messageHeader.toString();
     }
 
     public boolean stream(OutputStream outputStream) {
         try {
-            outputStream.write(getHeader().toString().getBytes("UTF-8"));
+            outputStream.write(getHeader().getBytes("UTF-8"));
             HTTPResponseBody rb;
             while ((rb = responseBodies.poll()) != null) {
                 InputStream body = rb.getInputStream();
                 int bufferSize = DefaultConfig.BUFFER_SIZE;
                 byte[] buffer = new byte[bufferSize];
-                long offset = rb.getRangeStart() - 1;
-                body.skip(rb.getRangeStart() - 1);
+                long offset = rb.getRangeStart();
+                body.skip(rb.getRangeStart());
                 while (offset + buffer.length <= rb.getRangeEnd()) {
                     body.read(buffer);
                     outputStream.write(buffer);

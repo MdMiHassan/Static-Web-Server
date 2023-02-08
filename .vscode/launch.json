@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Starter",
+            "request": "launch",
+            "mainClass": "Starter",
+            "projectName": "Static Web Server_1f1abb95"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"

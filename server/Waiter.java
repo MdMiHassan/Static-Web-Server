@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import server.Service.HTTPService;
 import server.Service.ServiceExecutor;
-import server.http.HTTPService;
 import util.Logger;
 
 public class Waiter implements Runnable {
@@ -23,7 +23,7 @@ public class Waiter implements Runnable {
             while (true) {
                 Socket socket = serverSocket.accept();
                 try {
-                    executor.add(new HTTPService(socket));
+                    executor.add(new HTTPService(socket,context));
                 } catch (Exception e) {
 
                 }

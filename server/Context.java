@@ -16,6 +16,7 @@ public class Context {
      private String osName;
      private String osVersion;
      private SackEngine sackEngine;
+     private String pathSeparator;
      private int port;
 
      public Context(String[] args) {
@@ -24,6 +25,7 @@ public class Context {
           osArchitecture = System.getProperty("os.arch");
           osName = System.getProperty("os.name");
           osVersion = System.getProperty("os.version");
+          pathSeparator=System.getProperty("file.separator");
           port=DefaultConfig.SERVER_PORT;
           sackEngine = new SackEngine();
           sackEngine.start();
@@ -141,7 +143,7 @@ public class Context {
      }
 
     public String getPathSeparator() {
-        return null;
+        return pathSeparator;
     }
 
 }

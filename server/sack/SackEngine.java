@@ -1,6 +1,5 @@
 package server.sack;
 
-import java.io.ByteArrayInputStream;
 
 import util.SynchronizedQueue;
 
@@ -30,7 +29,7 @@ public class SackEngine implements Runnable{
     public void save(String uri){
         queue.add(uri);
     }
-    public ByteArrayInputStream get(String uri){
+    public byte[] get(String uri){
         return sack.get(uri);
     }
     public boolean contains(String uri){
